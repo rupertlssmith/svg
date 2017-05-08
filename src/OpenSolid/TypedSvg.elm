@@ -99,6 +99,7 @@ conversion transformations to be applied to arbitrary SVG elements.
 import TypedSvg.Core as Core exposing (Svg, Attribute)
 import TypedSvg as Svg
 import TypedSvg.Attributes as Attributes
+import TypedSvg.Attributes.InPx as Px
 import TypedSvg.Types as Types exposing (Transform(..))
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point2d as Point2d
@@ -111,18 +112,9 @@ import OpenSolid.Polygon2d as Polygon2d
 import OpenSolid.Circle2d as Circle2d
 
 
-coordinatesString : Point2d -> String
-coordinatesString point =
-    let
-        ( x, y ) =
-            Point2d.coordinates point
-    in
-        toString x ++ "," ++ toString y
-
-
 pointsAttribute : List Point2d -> Attribute msg
 pointsAttribute points =
-    Attributes.points (String.join " " (List.map coordinatesString points))
+    Attributes.points (List.map Point2d.coordinates points)
 
 
 {-| Draw a `LineSegment2d` as an SVG `<polyline>` with the given attributes.
@@ -262,13 +254,13 @@ circle2d attributes circle =
             Point2d.coordinates (Circle2d.centerPoint circle)
 
         cx =
-            Attributes.cx (toString x)
+            Px.cx x
 
         cy =
-            Attributes.cy (toString y)
+            Px.cy y
 
         r =
-            Attributes.r (toString (Circle2d.radius circle))
+            Px.r (Circle2d.radius circle)
     in
         Svg.circle (cx :: cy :: r :: attributes) []
 
