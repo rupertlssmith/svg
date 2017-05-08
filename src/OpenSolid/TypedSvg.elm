@@ -1,4 +1,4 @@
-module OpenSolid.Svg
+module OpenSolid.TypedSvg
     exposing
         ( lineSegment2d
         , triangle2d
@@ -96,8 +96,10 @@ conversion transformations to be applied to arbitrary SVG elements.
 @docs relativeTo, placeIn
 -}
 
-import Svg as Svg exposing (Svg, Attribute)
-import Svg.Attributes as Attributes
+import TypedSvg.Core as Core exposing (Svg, Attribute)
+import TypedSvg as Svg
+import TypedSvg.Attributes as Attributes
+import TypedSvg.Types as Types exposing (Transform(..))
 import OpenSolid.Geometry.Types exposing (..)
 import OpenSolid.Point2d as Point2d
 import OpenSolid.Direction2d as Direction2d
@@ -306,13 +308,10 @@ scaleAbout point scale element =
         ( px, py ) =
             Point2d.coordinates (Point2d.scaleAbout point scale Point2d.origin)
 
-        components =
-            List.map toString [ scale, 0, 0, scale, px, py ]
-
         transform =
-            "matrix(" ++ String.join " " components ++ ")"
+            Matrix scale 0 0 scale px py
     in
-        Svg.g [ Attributes.transform transform ] [ element ]
+        Svg.g [ Attributes.transform [ transform ] ] [ element ]
 
 
 {-| Rotate arbitrary SVG around a given point by a given angle.
@@ -487,10 +486,7 @@ placeIn frame element =
         ( x2, y2 ) =
             Direction2d.components (Frame2d.yDirection frame)
 
-        components =
-            List.map toString [ x1, y1, x2, y2, px, py ]
-
         transform =
-            "matrix(" ++ String.join " " components ++ ")"
+            Matrix x1 y1 x2 y2 px py
     in
-        Svg.g [ Attributes.transform transform ] [ element ]
+        Svg.g [ Attributes.transform [ transform ] ] [ element ]
